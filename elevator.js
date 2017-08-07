@@ -23,29 +23,35 @@ Class Elevator {
     this.tripsSinceMaintenance = 0;
   }
 
-  requestMove(requestedFloor) {
+  requestMove(from, to) {
       if (! this.active) {
         say("Elevator is disabled");
         return false;
-      }
-
-      if (this.occupied) {
-        say("Elevator is occupied");
-        return false;
-      }
-
-      if (this.targetFloor) {
-        if (requestedFloor < this.currentFloor
-          || requestedFloor > this.targetFloor) {
-          say("Requested floor is outside of current trip");
-          return false;
-        }
       }
 
       if (! validFloor(requestedFloor)) {
         say("Invalid floor: " + requestedFloor 
           + ". (valid floors are " + MIN_FLOOR + " +  to " + MAX_FLOOR + ")");
         return false;
+      }
+
+      if (this.targetFloor) {
+        // already on a trip
+        
+        // lets see if request is going same direction
+        var currentDirection = Elevator.direction(this.currentFloor, this.targetFloor);
+        var requestedDirection = Elevator.direction(from, to);
+        if (currentDirection != requestedDirection) {
+          say("Request is going wrong direction");
+          return false;
+        }
+
+        // lets see if request is within current trip
+        if (from < this.currentFloor
+          || to > this.targetFloor) {
+          say("Request is outside of current trip");
+          return false;
+        }
       }
 
       if (requestedFloor == this.currentFloor) {
@@ -55,6 +61,16 @@ Class Elevator {
 
       say("Moving from " + this.currentFloor + " to " + requestedFloor);
       return move(requestedFloor);
+  }
+
+  static direction(from, to) {
+    if (to > from) {
+      return  1;
+    } else if (to == from) {
+      return 0;
+    } else {
+      return -1;
+    }
   }
 
   move(requestedFloor) {
