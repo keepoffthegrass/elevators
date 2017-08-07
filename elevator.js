@@ -102,6 +102,10 @@ Class Elevator {
     }
   }
 
+  willPass() {
+    // TODO refactor direction and trip within trip in move()
+  }
+
   // Item 3
   openDoor() {
     say("Opening door.");
@@ -111,6 +115,14 @@ Class Elevator {
   closeDoor() {
     say("Closing door.");
     this.doorOpen = false;
+  }
+
+  occupied() {
+    if (this.targetFloor) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   say(msg) {
@@ -129,15 +141,44 @@ function validFloor(f) {
 
 function requestElevator(fromFloor, toFloor) {
   // Item 6 and 7
+  var closestElevator = { id: 0, distance: 0};
 
-  for (var i = 0; i < NUM_ELEVATORS; i++) {
-    let e = elevators[i];
-    if (! e.targetFloor && e.currentFloor == fromFloor) {
-      
-      break;
-    }
+  while(1) {
+
+    for (var i = 0; i < NUM_ELEVATORS; i++) {
+      let e = elevators[i];
+      if (! e.occupied() && e.currentFloor == fromFloor) {
+        if (e.requestMove(toFloor)) {
+          console.log("Requesting elevator " + e.id);
+          break;
+        }
+      } else if (e.occupied() && e.willpass(fromFloor, toFloor)) {
+        if (e.requestMove(toFloor)) {
+          console.log("Requesting elevator " + e.id);
+          break;
+        }
+      }
+
+      if (! e.occupied() ) {
+        if (! closestElevator.id) {
+          // winner by default
+          closestElevator.id = e.id;
+        }
+
+        if (closestElevator.distance) {
+
+        }
+      }
+
+      // elevator e is not for us
+
+    } // each elevator
+
+
+    // sleep some reasonable amount of time
+    // console.log("There's always the stairs...");
   }
-  
+
 }
 
 
