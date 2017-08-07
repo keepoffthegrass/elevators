@@ -78,10 +78,6 @@ Class Elevator {
   move(requestedFloor) {
     this.targetFloor = requestedFloor;
 
-    if (this.doorOpen) {
-     this.closeDoor();
-    }
-
     // Item 8
     this.tripsSinceMaintenance++; 
     if (this.tripsSinceMaintenance > 99) {
@@ -97,13 +93,18 @@ Class Elevator {
     this.currentFloor = f;
 
     if (this.currentFloor = this.targetFloor) {
+      // we have arrived
       this.targetFloor = 0;
       this.openDoor();
     }
   }
 
   willPass() {
-    // TODO refactor direction and trip within trip in move()
+    // TODO refactor from direction and trip within trip conditionals in move() above
+  }
+
+  distanceFromFloor(f) {
+    return Math.abs(f - this.currentFloor);
   }
 
   // Item 3
@@ -132,6 +133,12 @@ Class Elevator {
 }
 
 
+
+
+
+
+
+
 function validFloor(f) {
   if (f < MIN_FLOOR || f > MAX_FLOOR) {
     return false;
@@ -147,6 +154,9 @@ function requestElevator(fromFloor, toFloor) {
 
     for (var i = 0; i < NUM_ELEVATORS; i++) {
       let e = elevators[i];
+
+      // The logic is not in the most oganized manner here
+      // but is listed in the order of the 3 cases in Item 7
       if (! e.occupied() && e.currentFloor == fromFloor) {
         if (e.requestMove(toFloor)) {
           console.log("Requesting elevator " + e.id);
@@ -163,10 +173,15 @@ function requestElevator(fromFloor, toFloor) {
         if (! closestElevator.id) {
           // winner by default
           closestElevator.id = e.id;
+
+          // Item 7 says closest unoccupied, doesnt mention direction
+          closestElevator.distance = e.disanceFromFloor(fromFloor);
         }
 
-        if (closestElevator.distance) {
-
+        let currentDistance = e.distanceFromFloor(fromFloor);
+        if (currentDistance < closestElevator.distance) {
+          closestElevator.id = e.id;
+          closestElevator.distance = currentDistance;
         }
       }
 
@@ -183,7 +198,6 @@ function requestElevator(fromFloor, toFloor) {
 
 
 function initElevatorSimulation() {
-  // Item 1
   for (var i = 0; i < NUM_ELEVATORS; i++) {
     let e = new Elevator(i);
     elevators.push(e);
@@ -191,6 +205,7 @@ function initElevatorSimulation() {
 }
 
 
+// Item 1
 initElevatorSimulation();
 
 
