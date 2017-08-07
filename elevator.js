@@ -12,52 +12,74 @@ Class Elevator {
   constructor(id) {
     this.id = id;
     this.currentFloor = 1;
+
+    // If targetFloor is defined, the elevator is on the move
     this.targetFloor;
 
     this.active = true;
     this.occupied = false;
     this.doorOpen = false;
-    this.onTheMove = false;
 
     this.tripsSinceMaintenance = 0;
   }
 
-  requestMove(targetFloor) {
+  requestMove(requestedFloor) {
       if (! this.active) {
-        console.log("Not moving. Elevator is disabled");
+        say("Elevator is disabled");
+        return false;
       }
 
-      if (! validFloor(targetFloor)) {
-        console.log("Not moving. Invalid floor: " + targetFloor 
+      if (this.occupied) {
+        say("Elevator is occupied");
+        return false;
+      }
+
+      if (this.targetFloor) {
+        if (requestedFloor < this.currentFloor
+          || requestedFloor > this.targetFloor) {
+          say("Requested floor is outside of current trip");
+          return false;
+        }
+      }
+
+      if (! validFloor(requestedFloor)) {
+        say("Invalid floor: " + requestedFloor 
           + ". (valid floors are " + MIN_FLOOR + " +  to " + MAX_FLOOR + ")");
-        return;
+        return false;
       }
 
-      if (targetFloor == this.currentFloor) {
-        console.log("Not moving. We're already on " + targetFloor);
-        return;
+      if (requestedFloor == this.currentFloor) {
+        say("Already on " + requestedFloor);
+        return true;
       }
 
-      console.log("Moving from " + this.currentFloor + " to " + targetFloor);
-      move(targetFloor);
+      say("Moving from " + this.currentFloor + " to " + requestedFloor);
+      return move(requestedFloor);
   }
 
-  move(targetFloor) {
-     this.targetFloor = targetFloor;
+  move(requestedFloor) {
+     this.targetFloor = requestedFloor;
 
-
+     if (this.doorOpen) {
+       this.closeDoor();
+     }
      
      this.tripsSinceMaintenance++; 
+     return true;
   }
 
   openDoor() {
-    console.log("Opening door.");
+    say("Opening door.");
     this.doorOpen = true;
   }
 
   closeDoor() {
-    console.log("Closing door.");
+    say("Closing door.");
     this.doorOpen = false;
+  }
+
+  say(msg) {
+    console.log("[Elevator " + id "] " + msg);
   }
 
 }
