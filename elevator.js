@@ -185,9 +185,27 @@ function requestElevator(fromFloor, toFloor) {
         }
       }
 
-      // elevator e is not for us
-
     } // each elevator
+
+
+    /* After time ran out I noticed:
+
+     1. I hadnt actually used the closestElevator
+       if (closestElevator.id) {
+          var e = getElevatorWithId(id);
+          e.requestMove(toFloor);
+       }
+    
+     2. The while loop should end after a successful request
+
+       var found = false;
+       while(! found) { ... }
+       
+       then in each of the 3 cases:
+
+       found = true;
+
+     */
 
 
     // sleep some reasonable amount of time
