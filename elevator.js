@@ -1,27 +1,30 @@
 
 
 var NUM_ELEVATORS = 4;
-var NUM_FLOORs = 9;
-
-
+var MAX_FLOOR = 9;
+var MIN_FLOOR = 1;
 
 
 Class Elevator {
 
   constructor(id) {
     this.id = id;
+    this.currentFloor = 1;
   }
 
   move(targetFloor) {
-    if (targetFloor > 0 && targetFloor <= NUM_FLOORS) {
       if (targetFloor == this.currentFloor) {
         console.log("Not moving. We're already on " + targetFloor);
-      } else {
-        console.log("Moving from " + this.currentFloor + " to " + targetFloor);
+        return;
       }
-    } else {
-      console.log("Not moving. Cannot move to " + targetFloor + ". (valid floors are 1 to " + NUM_FLOORS + ")");
-    }
+
+      if (targetFloor < MIN_FLOOR || targetFloor > MAX_FLOOR) {
+        console.log("Not moving. Cannot move to " + targetFloor 
+          + ". (valid floors are " + MIN_FLOOR + " +  to " + MAX_FLOOR + ")");
+        return;
+      }
+
+      console.log("Moving from " + this.currentFloor + " to " + targetFloor);
   }
 
   openDoor() {
@@ -29,10 +32,21 @@ Class Elevator {
   }
 
   closeDoor() {
-    console.log("closing door.");
+    console.log("Closing door.");
   }
 
 }
+
+
+function requestElevator(fromFloor, toFloor) {
+
+}
+
+
+for (var i = 0; i < NUM_ELEVATORS; i++) {
+  let e = new Elevator(i);
+}
+
 
 
 
