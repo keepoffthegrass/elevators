@@ -16,19 +16,19 @@ Class Elevator {
     // If targetFloor is defined, the elevator is on the move
     this.targetFloor;
 
-    this.active = true;
-    this.occupied = false;
+    this.maintenanceMode = false;
     this.doorOpen = false;
 
     this.tripsSinceMaintenance = 0;
   }
 
   requestMove(from, to) {
-      if (! this.active) {
-        say("Elevator is disabled");
+      if (this.maintenaceMode) {
+        say("Elevator is in Maintenance Mode");
         return false;
       }
 
+      // Item 4 and 5
       if (! validFloor(requestedFloor)) {
         say("Invalid floor: " + requestedFloor 
           + ". (valid floors are " + MIN_FLOOR + " +  to " + MAX_FLOOR + ")");
@@ -56,6 +56,8 @@ Class Elevator {
 
       if (requestedFloor == this.currentFloor) {
         say("Already on " + requestedFloor);
+        // shortcutting move() because we're there and
+        // dont need to increment trip counter
         return true;
       }
 
@@ -74,16 +76,33 @@ Class Elevator {
   }
 
   move(requestedFloor) {
-     this.targetFloor = requestedFloor;
+    this.targetFloor = requestedFloor;
 
-     if (this.doorOpen) {
-       this.closeDoor();
-     }
-     
-     this.tripsSinceMaintenance++; 
-     return true;
+    if (this.doorOpen) {
+     this.closeDoor();
+    }
+
+    // Item 8
+    this.tripsSinceMaintenance++; 
+    if (this.tripsSinceMaintenance > 99) {
+      this.maintenaceMode = true;
+    }
+
+    return true;
   }
 
+  passingFloor(f) {
+    // Item 2
+    say("Passing floor " + f);
+    this.currentFloor = f;
+
+    if (this.currentFloor = this.targetFloor) {
+      this.targetFloor = 0;
+      this.openDoor();
+    }
+  }
+
+  // Item 3
   openDoor() {
     say("Opening door.");
     this.doorOpen = true;
@@ -109,11 +128,21 @@ function validFloor(f) {
 
 
 function requestElevator(fromFloor, toFloor) {
+  // Item 6 and 7
+
+  for (var i = 0; i < NUM_ELEVATORS; i++) {
+    let e = elevators[i];
+    if (! e.targetFloor && e.currentFloor == fromFloor) {
+      
+      break;
+    }
+  }
   
 }
 
 
 function initElevatorSimulation() {
+  // Item 1
   for (var i = 0; i < NUM_ELEVATORS; i++) {
     let e = new Elevator(i);
     elevators.push(e);
